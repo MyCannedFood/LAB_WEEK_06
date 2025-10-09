@@ -3,6 +3,7 @@ package com.example.lab_week_06
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AlertDialog
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.lab_week_06.model.CatBreed
@@ -22,17 +23,18 @@ class MainActivity : AppCompatActivity() {
             override fun onItemClick(cat: CatModel) = showSelectionDialog(cat)
         })
     }
+    // In MainActivity.kt
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-//Setup the adapter for the recycler view
+
+        // Setup the adapter for the recycler view
         recyclerView.adapter = catAdapter
-//Setup the layout manager for the recycler view
-//A layout manager is used to set the structure of the item views
-//For this tutorial, we're using the vertical linear structure
-        recyclerView.layoutManager = LinearLayoutManager(this,
-            LinearLayoutManager.VERTICAL, false)
-//Add data to the model list in the adapter
+        // Setup the layout manager for the recycler view
+        recyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+
+        // Add data to the model list in the adapter
         catAdapter.setData(
             listOf(
                 CatModel(
@@ -58,8 +60,21 @@ class MainActivity : AppCompatActivity() {
                 )
             )
         )
+
+        // --- FIX STARTS HERE ---
+
+        // 1. Create an instance of SwipeToDeleteCallback and pass the adapter to it.
+        val swipeHandler = CatAdapter.SwipeToDeleteCallback(catAdapter)
+
+        // 2. Create an ItemTouchHelper with the swipe handler.
+        val itemTouchHelper = ItemTouchHelper(swipeHandler)
+
+        // 3. Attach the ItemTouchHelper to the RecyclerView.
+        itemTouchHelper.attachToRecyclerView(recyclerView)
+
+        // --- FIX ENDS HERE ---
     }
-//This will create a pop up dialog when one of the items from the recycler view is clicked.
+    //This will create a pop up dialog when one of the items from the recycler view is clicked.
     private fun showSelectionDialog(cat: CatModel) {
         AlertDialog.Builder(this)
 //Set the title for the dialog
